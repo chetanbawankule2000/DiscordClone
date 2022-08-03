@@ -55,26 +55,16 @@ function RootNavigator() {
   const { userId } = useAuthContext();
   return (
     <Stack.Navigator>
-      {!userId ? (
-        <Stack.Screen
-          name="SignUpScreen"
-          component={SignUpScreen}
-          options={{ headerShown: false }}
-        />
-      ) : (
-        <>
-          <Stack.Screen
-            name="Root"
-            component={DrawerNavigator}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="NotFound"
-            component={NotFoundScreen}
-            options={{ title: "Oops!" }}
-          />
-        </>
-      )}
+      <Stack.Screen
+        name="Root"
+        component={DrawerNavigator}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="NotFound"
+        component={NotFoundScreen}
+        options={{ title: "Oops!" }}
+      />
     </Stack.Navigator>
   );
 }

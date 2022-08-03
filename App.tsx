@@ -12,9 +12,15 @@ import { StreamColors } from "./src/constants/Colors";
 import { StreamChat } from "stream-chat";
 import { useEffect, useState } from "react";
 import { OverlayProvider, Chat, DeepPartial, Theme } from "stream-chat-expo";
+import { Amplify } from "aws-amplify";
+import { withAuthenticator } from "aws-amplify-react-native";
+import awsconfig from "./src/aws-exports";
+
+Amplify.configure(awsconfig);
+
 const API_KEY = "hu35ercbrfvx";
 const client = StreamChat.getInstance(API_KEY);
-export default function App() {
+const App = () => {
   const isLoadingComplete = useCachedResources();
   const colorScheme = useColorScheme();
 
@@ -35,7 +41,7 @@ export default function App() {
   } else {
     return (
       <SafeAreaProvider>
-        <AuthContextComponent>
+        <AuthContextComponent client={client}>
           <OverlayProvider value={{ style: theme }}>
             <Chat client={client}>
               <Navigation colorScheme={"dark"} />
@@ -46,4 +52,6 @@ export default function App() {
       </SafeAreaProvider>
     );
   }
-}
+};
+
+export default withAuthenticator(App);

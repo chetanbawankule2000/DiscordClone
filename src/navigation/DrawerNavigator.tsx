@@ -10,6 +10,7 @@ import { ChannelList } from "stream-chat-expo";
 import ChannelScreen from "../screens/ChannelScreen";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useAuthContext } from "../context/AuthContext";
+import { Auth } from "aws-amplify";
 const Drawer = createDrawerNavigator();
 
 const DrawerNavigator = () => {
@@ -32,6 +33,10 @@ const CustomDrawerContent = (props) => {
   const { userId } = useAuthContext();
   const filters = { members: { $in: [userId] } };
   const publicFilters = { type: "livestream" };
+
+  const logout = () => {
+    Auth.signOut();
+  };
   return (
     <SafeAreaView {...props} style={{ flex: 1 }}>
       <Text style={styles.title}>notJust Devlopment</Text>
@@ -42,6 +47,12 @@ const CustomDrawerContent = (props) => {
       ></ChannelList>
       <Text style={styles.title}>Your Channel</Text>
       <ChannelList onSelect={onChannelSelect} filters={filters}></ChannelList>
+      <Text
+        style={{ color: "white", margin: 10, fontWeight: "bold" }}
+        onPress={logout}
+      >
+        Logout
+      </Text>
     </SafeAreaView>
   );
 };
