@@ -5,7 +5,7 @@ import {
   DrawerItem,
 } from "@react-navigation/drawer";
 import TabOneScreen from "../screens/TabOneScreen";
-import { Linking, Text, StyleSheet, View } from "react-native";
+import { Linking, Text, StyleSheet, View, Pressable } from "react-native";
 import { ChannelList } from "stream-chat-expo";
 import ChannelScreen from "../screens/ChannelScreen";
 import UserListScreen from "../screens/UserListScreen";
@@ -14,6 +14,9 @@ import { useAuthContext } from "../context/AuthContext";
 import { Auth } from "aws-amplify";
 import { useState } from "react";
 import Button from "../components/Button";
+import ChannelMemberScreen from "../screens/ChannelMemberScreen";
+import { FontAwesome5 } from "@expo/vector-icons";
+import NewChannelScreen from "../screens/NewChannelScreen";
 const Drawer = createDrawerNavigator();
 
 const DrawerNavigator = () => {
@@ -22,12 +25,37 @@ const DrawerNavigator = () => {
       <Drawer.Screen
         name="ChannelScreen"
         component={ChannelScreen}
-        options={{ title: "Channel" }}
+        options={({ navigation, route }) => ({
+          title: "Channel",
+          headerRight: () =>
+            route?.params?.channel && (
+              <Pressable
+                style={styles.icon}
+                onPress={() =>
+                  navigation.navigate("ChannelMembers", {
+                    channel: route.params.channel,
+                  })
+                }
+              >
+                <FontAwesome5 name="users" size={24} color="lightgrey" />
+              </Pressable>
+            ),
+        })}
       />
       <Drawer.Screen
         name="UserList"
         component={UserListScreen}
         options={{ title: "Users" }}
+      />
+      <Drawer.Screen
+        name="ChannelMembers"
+        component={ChannelMemberScreen}
+        options={{ title: "Channel Members" }}
+      />
+      <Drawer.Screen
+        name="NewChannel"
+        component={NewChannelScreen}
+        options={{ title: "New Channel" }}
       />
     </Drawer.Navigator>
   );
@@ -41,8 +69,11 @@ const CustomDrawerContent = (props) => {
     navigation.navigate("ChannelScreen", { channel });
   };
   const { userId } = useAuthContext();
-  const filters = { members: { $in: [userId] } };
-  const publicFilters = { type: "livestream" };
+  const privateFilters = { type: "messaging", members: { $in: [userId] } };
+  const publicFilters = {
+    type: { $ne: "messaging" },
+    members: { $in: [userId] },
+  };
 
   const logout = () => {
     Auth.signOut();
@@ -71,10 +102,18 @@ const CustomDrawerContent = (props) => {
         </Text>
       </View>
       {tab === "public" ? (
-        <ChannelList
-          onSelect={onChannelSelect}
-          filters={publicFilters}
-        ></ChannelList>
+        <>
+          <Button
+            title="Stat new channel"
+            onPress={() => {
+              navigation.navigate("NewChannel");
+            }}
+          />
+          <ChannelList
+            onSelect={onChannelSelect}
+            filters={publicFilters}
+          ></ChannelList>
+        </>
       ) : (
         <>
           <Button
@@ -85,7 +124,7 @@ const CustomDrawerContent = (props) => {
           />
           <ChannelList
             onSelect={onChannelSelect}
-            filters={filters}
+            filters={privateFilters}
           ></ChannelList>
         </>
       )}
@@ -120,6 +159,10 @@ const styles = StyleSheet.create({
     margin: 10,
     fontWeight: "bold",
     textAlign: "center",
+  },
+  icon: {
+    color: "white",
+    marginRight: 10,
   },
 });
 
