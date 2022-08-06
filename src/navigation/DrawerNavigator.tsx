@@ -17,6 +17,7 @@ import Button from "../components/Button";
 import ChannelMemberScreen from "../screens/ChannelMemberScreen";
 import { FontAwesome5 } from "@expo/vector-icons";
 import NewChannelScreen from "../screens/NewChannelScreen";
+import ChannelStack from "./ChannelStack";
 const Drawer = createDrawerNavigator();
 
 const DrawerNavigator = () => {
@@ -24,33 +25,15 @@ const DrawerNavigator = () => {
     <Drawer.Navigator drawerContent={CustomDrawerContent}>
       <Drawer.Screen
         name="ChannelScreen"
-        component={ChannelScreen}
-        options={({ navigation, route }) => ({
-          title: "Channel",
-          headerRight: () =>
-            route?.params?.channel && (
-              <Pressable
-                style={styles.icon}
-                onPress={() =>
-                  navigation.navigate("ChannelMembers", {
-                    channel: route.params.channel,
-                  })
-                }
-              >
-                <FontAwesome5 name="users" size={24} color="lightgrey" />
-              </Pressable>
-            ),
-        })}
+        component={ChannelStack}
+        options={{
+          headerShown: false,
+        }}
       />
       <Drawer.Screen
         name="UserList"
         component={UserListScreen}
         options={{ title: "Users" }}
-      />
-      <Drawer.Screen
-        name="ChannelMembers"
-        component={ChannelMemberScreen}
-        options={{ title: "Channel Members" }}
       />
       <Drawer.Screen
         name="NewChannel"
@@ -66,7 +49,10 @@ const CustomDrawerContent = (props) => {
   const [tab, setTab] = useState("public");
   const onChannelSelect = (channel) => {
     // navigate to screen with channel
-    navigation.navigate("ChannelScreen", { channel });
+    navigation.navigate("ChannelScreen", {
+      screen: "Chat",
+      params: { channel },
+    });
   };
   const { userId } = useAuthContext();
   const privateFilters = { type: "messaging", members: { $in: [userId] } };
