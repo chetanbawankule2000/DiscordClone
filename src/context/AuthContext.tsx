@@ -9,9 +9,11 @@ const AuthContext = createContext({
 });
 const AuthContextComponent = ({ children, client }) => {
   const [userId, setUserId] = useState(null);
+  const [emailId, setEmailId] = useState('');
   const connectStreamChatUser = async () => {
     const userData = await Auth.currentAuthenticatedUser();
     const { sub, email } = userData.attributes;
+    setEmailId(email);
 
     const getToken = await API.graphql(graphqlOperation(getStreamToken));
     const token = getToken?.data?.getStreamToken;
@@ -39,7 +41,7 @@ const AuthContextComponent = ({ children, client }) => {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ userId, setUserId }}>
+    <AuthContext.Provider value={{ userId, setUserId,emailId }}>
       {children}
     </AuthContext.Provider>
   );

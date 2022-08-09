@@ -54,7 +54,7 @@ const CustomDrawerContent = (props) => {
       params: { channel },
     });
   };
-  const { userId } = useAuthContext();
+  const { userId, emailId } = useAuthContext();
   const privateFilters = { type: "messaging", members: { $in: [userId] } };
   const publicFilters = {
     type: { $ne: "messaging" },
@@ -66,7 +66,7 @@ const CustomDrawerContent = (props) => {
   };
   return (
     <SafeAreaView {...props} style={{ flex: 1 }}>
-      <Text style={styles.title}>notJust Devlopment</Text>
+      <Text style={styles.title}>{emailId}</Text>
       <View style={styles.tabs}>
         <Text
           onPress={() => setTab("public")}
